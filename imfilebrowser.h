@@ -437,6 +437,9 @@ inline void ImGui::FileBrowser::Display()
             bool selected = selectedFilenames_.find(rsc.name)
                          != selectedFilenames_.end();
 
+			if (rsc.isDir)
+				ImGui::PushStyleColor(ImGuiCol_Text, { 0.4, 0.4, 0.75, 1.0 });
+
             if(Selectable(rsc.showName.c_str(), selected,
                           ImGuiSelectableFlags_DontClosePopups))
             {
@@ -482,6 +485,9 @@ inline void ImGui::FileBrowser::Display()
                         selectedFilenames_.clear();
                 }
             }
+
+			if (rsc.isDir)
+				ImGui::PopStyleColor();
 
             if(IsItemClicked(0) && IsMouseDoubleClicked(0) && rsc.isDir)
             {
@@ -608,7 +614,7 @@ inline void ImGui::FileBrowser::SetTypeFilters(
 
 inline void ImGui::FileBrowser::SetPwdUncatched(const std::filesystem::path &pwd)
 {
-    fileRecords_ = { FileRecord{ true, "..", "[D] ..", "" } };
+    fileRecords_ = { FileRecord{ true, "..", "..", "" } };
 
     for(auto &p : std::filesystem::directory_iterator(pwd))
     {
@@ -627,7 +633,7 @@ inline void ImGui::FileBrowser::SetPwdUncatched(const std::filesystem::path &pwd
 
         rcd.extension = p.path().filename().extension();
 
-        rcd.showName = (rcd.isDir ? "[D] " : "[F] ") +
+        rcd.showName = //(rcd.isDir ? "[D] " : "[F] ") +
                        u8StrToStr(p.path().filename().u8string());
         fileRecords_.push_back(rcd);
     }
